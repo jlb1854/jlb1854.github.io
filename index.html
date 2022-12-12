@@ -11,7 +11,7 @@
       #viewDiv {
         padding: 0;
         margin: 0;
-        height: 100%;
+        height: 90%;
         width: 100%;
       }
 
@@ -25,17 +25,162 @@
         width: 280px;
       }
 
+      #chartContainer {
+        height: 30%;
+        width: 100%;
+      }
+
       #infoDiv span {
         color: #F9C653;
         font-size: 12pt;
         font-weight: bolder;
       }
     </style>
-
-    <link rel="stylesheet" href="https://js.arcgis.com/4.25/esri/themes/dark/main.css" />
+    <script src="https://canvasjs.com/assets/script/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
     <script src="https://js.arcgis.com/4.25/"></script>
+    <link rel="stylesheet" href="https://js.arcgis.com/4.25/esri/themes/dark/main.css" />
     <script>
+      window.onload = function () {
+      var speed = [];
+      var motorTemp = [];
+      var batVolt = [];
+      var chart = new CanvasJS.Chart("chartContainer", {
+        animationEnabled: true,
+        theme: "dark1",
+        axisY:[{
+          title: "Speed",
+          lineColor: "#C24642",
+          tickColor: "#C24642",
+          labelFontColor: "#C24642",
+          titleFontColor: "#C24642",
+          includeZero: true,
+          suffix: "MPH"
+        },
+        {
+          title: "Battery Voltage",
+          lineColor: "#369EAD",
+          tickColor: "#369EAD",
+          labelFontColor: "#369EAD",
+          titleFontColor: "#369EAD",
+          includeZero: true,
+          suffix: "V"
+        },
+        {
+          title: "Temperature",
+          lineColor: "#7F6084",
+          tickColor: "#7F6084",
+          labelFontColor: "#7F6084",
+          titleFontColor: "#7F6084",
+          includeZero: true,
+          // prefix: "$",
+          suffix: "C"
+        }],
+        toolTip: {
+          shared: true
+        },
+        legend: {
+          cursor: "pointer",
+          itemclick: toggleDataSeries
+        },
+        data: [
+        {
+          // indexLabelFontColor: "darkSlateGray",
+          name: "Speed (MPH)",
+          color: "#369EAD",
+          type: "line",
+          showInLegend: true,
+          axisYIndex: 0,
+          dataPoints: speed
+        },
+        {
+          type: "line",
+          name: "Battery Voltage (V)",
+          color: "#C24642",
+          axisYIndex: 1,
+          showInLegend: true,
+          dataPoints: batVolt
+        },
+        {
+          type: "line",
+          name: "Motor Temperature (C)",
+          color: "#7F6084",
+          axisYIndex: 2,
+
+          // axisYType: "secondary",
+          showInLegend: true,
+          dataPoints: motorTemp
+        }
+
+      ]
+      });
+
+      function addData(data) {
+        // console.log(data)
+        for (var i = 0; i < 10475; i++) {
+          speed.push({
+            x: new Date(data.features[i].properties.Timestamp),
+            y: data.features[i].properties.speed
+          });
+          batVolt.push({
+            x: new Date(data.features[i].properties.Timestamp),
+            y: data.features[i].properties.DC_link_cir
+          });
+          motorTemp.push({
+            x: new Date(data.features[i].properties.Timestamp),
+            y: data.features[i].properties.Motor_tempe
+          });
+        }
+        // alert(Date(data.features[1].properties.Timestamp))
+        // alert(data.features[1].properties.speed)
+        // console.log(data.)
+
+        chart.render();
+
+      }
+
+      $.getJSON("https://raw.githubusercontent.com/jlb1854/DEV1_TrackDay/main/DEV1_parking_lot_11_17_all_epoch.geojson",addData)
+
+      function toggleDataSeries(e) {
+        if (typeof (e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+          e.dataSeries.visible = false;
+        } else {
+          e.dataSeries.visible = true;
+        }
+        e.chart.render();
+      }
+      // chart.render();
+
+      
+
+      function addData(data) {
+        // console.log(data)
+        for (var i = 0; i < 10475; i++) {
+          speed.push({
+            x: new Date(data.features[i].properties.Timestamp),
+            y: data.features[i].properties.speed
+          });
+          batVolt.push({
+            x: new Date(data.features[i].properties.Timestamp),
+            y: data.features[i].properties.DC_link_cir
+          });
+          motorTemp.push({
+            x: new Date(data.features[i].properties.Timestamp),
+            y: data.features[i].properties.Motor_tempe
+          });
+        }
+        // alert(Date(data.features[1].properties.Timestamp))
+        // alert(data.features[1].properties.speed)
+        // console.log(data.)
+
+        chart.render();
+
+      }
+    }
+
       require([
+        // "dojo/dom",
+        // "dojo/on",
         "esri/Map",
         "esri/views/MapView",
         "esri/layers/GeoJSONLayer",
@@ -153,11 +298,18 @@
           }
         });
 
+        // console.log(layer.Average_Speed)
         const map = new Map({
           basemap: "dark-gray-vector",
           layers: [layer]
           
         });
+
+        // on(map, "load", function (){
+        // console.log("Map load event");
+        // // Hook up jQuery
+        // $(document).ready(jQueryReady);
+        // });
 
         const view = new MapView({
           map: map,
@@ -216,7 +368,7 @@
                       // console.log(html)
                     }
                   }
-                  console.log(htmls)
+                  // console.log(htmls)
                   statsDiv.innerHTML = htmls
 
                   // const yearHtml =
@@ -400,5 +552,9 @@
       <div> <b>RIT Electric Vehicle Team Track Testing</b></div><br/>
       <div id="statsDiv" class="esri-widget"></div>
     </div>
-  </body>
+    <div id="chartContainer"></div>
+  <!-- <script src="https://canvasjs.com/assets/script/jquery-1.11.1.min.js"></script> -->
+  <!-- <script type="text/javascript" src="https://canvasjs.com/assets/script/canvasjs.min.js"></script> -->
+  <!-- <script src="https://js.arcgis.com/4.25/"></script> -->
+</body>
 </html>
