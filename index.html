@@ -7,11 +7,26 @@
 
     <style>
       html,
-      body,
+      body {
+        margin: 0;
+        padding: 0;
+      }
+
+      /* use viewport-relative units to cover page fully */
+      body {
+        height: 100vh;
+        width: 100vw;
+      }
+
+      /* include border and padding in element width and height */
+      * {
+        box-sizing: border-box;
+      }
+
       #viewDiv {
         padding: 0;
         margin: 0;
-        height: 90%;
+        height: 70%;
         width: 100%;
       }
 
@@ -58,15 +73,15 @@
           suffix: "MPH"
         },
         {
-          title: "Battery Voltage",
+          title: "Voltage",
           lineColor: "#369EAD",
           tickColor: "#369EAD",
           labelFontColor: "#369EAD",
           titleFontColor: "#369EAD",
           includeZero: true,
           suffix: "V"
-        },
-        {
+        }],
+        axisY2: {
           title: "Temperature",
           lineColor: "#7F6084",
           tickColor: "#7F6084",
@@ -75,7 +90,8 @@
           includeZero: true,
           // prefix: "$",
           suffix: "C"
-        }],
+        },
+        // }],
         toolTip: {
           shared: true
         },
@@ -105,9 +121,9 @@
           type: "line",
           name: "Motor Temperature (C)",
           color: "#7F6084",
-          axisYIndex: 2,
+          // axisYIndex: 0,
 
-          // axisYType: "secondary",
+          axisYType: "secondary",
           showInLegend: true,
           dataPoints: motorTemp
         }
@@ -130,6 +146,7 @@
             x: new Date(data.features[i].properties.Timestamp),
             y: data.features[i].properties.Motor_tempe
           });
+
         }
         // alert(Date(data.features[1].properties.Timestamp))
         // alert(data.features[1].properties.speed)
@@ -198,14 +215,14 @@
           copyright: "LJ Boone",
           title: "RIT Electric Vehicle Team Testing",
           // set the CSVLayer's timeInfo based on the date field
-          timeInfo: {
-            startField: "time", // name of the date field
-            interval: {
-              // set time interval to one day
-              unit: "minutes",
-              value: 1
-            }
-          },
+          // timeInfo: {
+          //   startField: "time", // name of the date field
+          //   interval: {
+          //     // set time interval to one day
+          //     unit: "minutes",
+          //     value: 1
+          //   }
+          // },
           orderBy: {
             field: "speed"
           },
