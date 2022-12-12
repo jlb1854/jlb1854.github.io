@@ -6,6 +6,7 @@
     <title>DEV1 Testing</title>
 
     <style>
+      /* CSS Formatting for the page */
       html,
       body {
         margin: 0;
@@ -26,12 +27,8 @@
       #viewDiv {
         padding: 0;
         margin: 0;
-        height: 70%;
+        height: 70%; /* set the map to 70% of the window height*/
         width: 100%;
-      }
-
-      #timeSlider {
-        width: 400px;
       }
 
       #infoDiv {
@@ -41,7 +38,7 @@
       }
 
       #chartContainer {
-        height: 30%;
+        height: 30%;  /* set the chart to 30% of the window height*/
         width: 100%;
       }
 
@@ -51,26 +48,35 @@
         font-weight: bolder;
       }
     </style>
-    <script src="https://canvasjs.com/assets/script/jquery-1.11.1.min.js"></script>
+    <!-- Charts JQuery -->
+    <script src="https://canvasjs.com/assets/script/jquery-1.11.1.min.js"></script>   
+    <!-- CanvasJS -->
     <script type="text/javascript" src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+    <!-- ESRI Javascript API -->
     <script src="https://js.arcgis.com/4.25/"></script>
+    <!-- Dark Theme CSS Sheet-->
     <link rel="stylesheet" href="https://js.arcgis.com/4.25/esri/themes/dark/main.css" />
     <script>
+      // Render the graphs
       window.onload = function () {
+      // Containers for the three plotted variables
       var speed = [];
       var motorTemp = [];
       var batVolt = [];
+      // Instantiate the chart in its container
       var chart = new CanvasJS.Chart("chartContainer", {
+        // enable animation of the tooltip
         animationEnabled: true,
+      // dark theme
         theme: "dark1",
         axisY:[{
-          title: "Speed",
-          lineColor: "#C24642",
+          title: "Speed", // axis label
+          lineColor: "#C24642", //assign colors to the lines and fonts to be the same
           tickColor: "#C24642",
           labelFontColor: "#C24642",
           titleFontColor: "#C24642",
-          includeZero: true,
-          suffix: "MPH"
+          includeZero: true, // allow zeros
+          suffix: "MPH" // set units for the axis
         },
         {
           title: "Voltage",
@@ -79,17 +85,16 @@
           labelFontColor: "#369EAD",
           titleFontColor: "#369EAD",
           includeZero: true,
-          suffix: "V"
-        }],
-        axisY2: {
+          suffix: "V" // volts
+        }], 
+        axisY2: { // right side y axis
           title: "Temperature",
           lineColor: "#7F6084",
           tickColor: "#7F6084",
           labelFontColor: "#7F6084",
           titleFontColor: "#7F6084",
           includeZero: true,
-          // prefix: "$",
-          suffix: "C"
+          suffix: "C" // celcius
         },
         // }],
         toolTip: {
@@ -97,11 +102,10 @@
         },
         legend: {
           cursor: "pointer",
-          itemclick: toggleDataSeries
+          itemclick: toggleDataSeries // when a legend entry is clicked, call that function
         },
         data: [
         {
-          // indexLabelFontColor: "darkSlateGray",
           name: "Speed (MPH)",
           color: "#C24642",
           type: "line",
@@ -122,7 +126,6 @@
           name: "Motor Temperature (C)",
           color: "#7F6084",
           // axisYIndex: 0,
-
           axisYType: "secondary",
           showInLegend: true,
           dataPoints: motorTemp
@@ -131,44 +134,16 @@
       ]
       });
 
-      function addData(data) {
-        // console.log(data)
-        for (var i = 0; i < 10475; i++) {
-          speed.push({
-            x: new Date(data.features[i].properties.Timestamp),
-            y: data.features[i].properties.speed
-          });
-          batVolt.push({
-            x: new Date(data.features[i].properties.Timestamp),
-            y: data.features[i].properties.DC_link_cir
-          });
-          motorTemp.push({
-            x: new Date(data.features[i].properties.Timestamp),
-            y: data.features[i].properties.Motor_tempe
-          });
-
-        }
-        // alert(Date(data.features[1].properties.Timestamp))
-        // alert(data.features[1].properties.speed)
-        // console.log(data.)
-
-        chart.render();
-
-      }
-
       $.getJSON("https://raw.githubusercontent.com/jlb1854/DEV1_TrackDay/main/DEV1_parking_lot_11_17_all_epoch.geojson",addData)
 
-      function toggleDataSeries(e) {
+      function toggleDataSeries(e) { // set the visibility of a chart axis
         if (typeof (e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
           e.dataSeries.visible = false;
         } else {
           e.dataSeries.visible = true;
         }
         e.chart.render();
-      }
-      // chart.render();
-
-      
+      }      
 
       function addData(data) {
         // console.log(data)
@@ -186,9 +161,6 @@
             y: data.features[i].properties.Motor_tempe
           });
         }
-        // alert(Date(data.features[1].properties.Timestamp))
-        // alert(data.features[1].properties.speed)
-        // console.log(data.)
 
         chart.render();
 
@@ -207,7 +179,6 @@
 
         // set the timeInfo on GeoJSONLayer at the time initialization
         const layer = new GeoJSONLayer({
-          // url: "https://bsvensson.github.io/various-tests/geojson/usgs-earthquakes-06182019.geojson",
           // url: "https://raw.githubusercontent.com/jlb1854/DEV1_TrackDay/main/DEV1_parking_lot_11_17_combined.geojson",
           url: "https://raw.githubusercontent.com/jlb1854/DEV1_TrackDay/main/DEV1_parking_lot_11_17_all_epoch.geojson",
           copyright: "LJ Boone",
@@ -226,10 +197,9 @@
           },
           renderer: {
             type: "simple",
-            field: "speed",
             symbol: {
               type: "simple-marker",
-              color: "red",
+              // field: "DC_link_cir",
               size: 2,
               outline: null
             },
@@ -242,31 +212,9 @@
                     { value: 60, color: "#d7191c" }
                   ]
                 }
-                // ,
-                // {
-                //   type: "color",
-                //   field: "depth",
-                //   stops: [
-                //     {
-                //       value: 2.5,
-                //       color: "#F9C653",
-                //       label: "<2km"
-                //     },
-                //     {
-                //       value: 3.5,
-                //       color: "#F8864D",
-                //       label: "3km"
-                //     },
-                //     {
-                //       value: 4,
-                //       color: "#C53C06",
-                //       label: ">4km"
-                //     }
-                //   ]
-                // }
               ]
             },
-          popupTemplate: {
+          popupTemplate: {  // popup for when a data point is clicked
             title: "Data Point",
             content: [
               {
@@ -314,8 +262,8 @@
         });
 
         const map = new Map({
-          basemap: "dark-gray-vector",
-          layers: [layer]
+          basemap: "dark-gray-vector", // basemap
+          layers: [layer] // feature layer on the map
           
         });
 
@@ -494,10 +442,10 @@
         //     });
         // });
 
-        const speedMax = {
-          onStatisticField: "speed",
-          outStatisticFieldName: "Max_Speed",
-          statisticType: "max"
+        const speedMax = {   // gather statistics to display
+          onStatisticField: "speed",  // field
+          outStatisticFieldName: "Max_Speed", //name
+          statisticType: "max" // type of statistic
         };
 
         const speedAvg = {
@@ -525,7 +473,7 @@
           Min_Volt: "Min Battery Voltage"
         };
 
-        // add a legend for the earthquakes layer
+        // add a legend for the layer
         const legendExpand = new Expand({
           collapsedIconClass: "esri-icon-collapse",
           expandIconClass: "esri-icon-expand",
@@ -546,7 +494,7 @@
           expandTooltip: "Expand info",
           view: view,
           content: infoDiv,
-          expanded: true
+          expanded: false
         });
         view.ui.add(infoDivExpand, "top-right");
       });
