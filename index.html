@@ -196,8 +196,6 @@
     }
 
       require([
-        // "dojo/dom",
-        // "dojo/on",
         "esri/Map",
         "esri/views/MapView",
         "esri/layers/GeoJSONLayer",
@@ -315,18 +313,11 @@
           }
         });
 
-        // console.log(layer.Average_Speed)
         const map = new Map({
           basemap: "dark-gray-vector",
           layers: [layer]
           
         });
-
-        // on(map, "load", function (){
-        // console.log("Map load event");
-        // // Hook up jQuery
-        // $(document).ready(jQueryReady);
-        // });
 
         const view = new MapView({
           map: map,
